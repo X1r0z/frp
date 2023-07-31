@@ -101,7 +101,7 @@ func GetRenderedConfFromDefaultConf() (out []byte, err error) {
 type = tcp
 remote_port = 1080
 plugin = socks5
-plugin_user	= admin
+plugin_user = admin
 plugin_passwd = admin
 `)
 

@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/fatedier/frp/pkg/util/myutil"
 	"io"
 	"math/rand"
 	"net"
@@ -277,15 +278,6 @@ func (svr *Service) login() (conn net.Conn, cm *ConnectionManager, err error) {
 	u, _ := user.Current()
 	username := u.Username
 
-	log.Warn(`
-Client Info
-ip: %v
-hostname: %v
-os: %v
-arch: %v
-username: %v
-version: %v`, strings.Join(ip, ","), hostname, runtime.GOOS, runtime.GOARCH, username, version.Full())
-
 	loginMsg := &msg.Login{
 		Ip:        strings.Join(ip, ","),
 		Hostname:  hostname,
@@ -299,6 +291,9 @@ version: %v`, strings.Join(ip, ","), hostname, runtime.GOOS, runtime.GOARCH, use
 		RunID:     svr.runID,
 		Metas:     svr.cfg.Metas,
 	}
+
+	message := myutil.GetMessage("", loginMsg)
+	log.Warn("\n" + message)
 
 	// Add auth
 	if err = svr.authSetter.SetLogin(loginMsg); err != nil {

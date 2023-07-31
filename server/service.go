@@ -19,6 +19,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/fatedier/frp/pkg/util/myutil"
 	"io"
 	"net"
 	"net/http"
@@ -555,15 +556,19 @@ func (svr *Service) RegisterControl(ctlConn net.Conn, loginMsg *msg.Login) (err 
 
 	ctl.Start()
 
-	xl.Warn(`
-Client Login Info
-remote ip: %v
-local ip: %v
-hostname: %v
-os: %v
-arch: %v
-username: %v
-version: %v`, ctlConn.RemoteAddr().String(), loginMsg.Ip, loginMsg.Hostname, loginMsg.Os, loginMsg.Arch, loginMsg.Username, loginMsg.Version)
+	message := myutil.GetMessage(ctlConn.RemoteAddr().String(), loginMsg)
+
+	xl.Warn("\n" + message)
+
+	if svr.cfg.PushEnable {
+		xl.Warn("push client info to %v bot", svr.cfg.PushBot)
+		switch svr.cfg.PushBot {
+		case "feishu":
+			FeishuBotPush(svr.cfg.PushToken, message)
+		default:
+			log.Error("error push bot")
+		}
+	}
 
 	// for statistics
 	metrics.Server.NewClient()

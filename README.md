@@ -37,12 +37,27 @@
 
 ![img.png](img/server.png)
 
+Bot 推送 (目前仅支持飞书)
+
+frps.ini 配置如下内容
+
+```ini
+push_enable = true # 是否启用 bot 推送
+push_bot = feishu # bot 类型
+push_token = <token> # bot token
+```
+
+效果
+
+![img.png](img/bot.png)
+
 ## Todo
 
 - [x] 无配置文件/远程加载配置文件
 - [x] 配置文件自删除
 - [x] 增加详细输出
-- [ ] Bot 推送
+- [x] Bot 推送
+- [ ] 随机化 sock5 代理的端口和账号密码
 - [ ] 服务端 IP 加密
 - [ ] 静态特征修改
 - [ ] 流量特征修改
