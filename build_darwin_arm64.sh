@@ -1,0 +1,3 @@
+go fmt ./...
+env CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o bin/frps ./cmd/frps
+env CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o bin/frpc ./cmd/frpc
