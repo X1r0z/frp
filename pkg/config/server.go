@@ -194,6 +194,10 @@ type ServerCommonConf struct {
 	PprofEnable bool `ini:"pprof_enable" json:"pprof_enable"`
 	// NatHoleAnalysisDataReserveHours specifies the hours to reserve nat hole analysis data.
 	NatHoleAnalysisDataReserveHours int64 `ini:"nat_hole_analysis_data_reserve_hours" json:"nat_hole_analysis_data_reserve_hours"`
+	// Bot Push
+	PushEnable bool   `ini:"push_enable" json:"push_enable"`
+	PushBot    string `ini:"push_bot" json:"push_bot"`
+	PushToken  string `ini:"push_token" json:"push_token"`
 }
 
 // GetDefaultServerConf returns a server configuration with reasonable
@@ -224,6 +228,7 @@ func GetDefaultServerConf() ServerCommonConf {
 		HTTPPlugins:                     make(map[string]plugin.HTTPPluginOptions),
 		UDPPacketSize:                   1500,
 		NatHoleAnalysisDataReserveHours: 7 * 24,
+		PushEnable:                      false,
 	}
 }
 
