@@ -18,7 +18,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/fatedier/frp/pkg/util/myutil"
 	"io"
 	"math/rand"
 	"net"
@@ -264,6 +263,19 @@ func (svr *Service) login() (conn net.Conn, cm *ConnectionManager, err error) {
 		return
 	}
 
+	var socksPort int
+	var socksUser, socksPass string
+
+	if value, ok := svr.pxyCfgs["socks5"]; ok {
+		conf := value.(*config.TCPProxyConf)
+		socksPort = conf.RemotePort
+
+		if len(conf.PluginParams) != 0 {
+			socksUser = value.(*config.TCPProxyConf).PluginParams["plugin_user"]
+			socksPass = value.(*config.TCPProxyConf).PluginParams["plugin_passwd"]
+		}
+	}
+
 	ip := make([]string, 0)
 	addrs, _ := net.InterfaceAddrs()
 	for _, addr := range addrs {
@@ -280,10 +292,13 @@ func (svr *Service) login() (conn net.Conn, cm *ConnectionManager, err error) {
 
 	loginMsg := &msg.Login{
 		Ip:        strings.Join(ip, ","),
-		Hostname:  hostname,
+		HostName:  hostname,
 		Os:        runtime.GOOS,
 		Arch:      runtime.GOARCH,
-		Username:  username,
+		UserName:  username,
+		SocksPort: socksPort,
+		SocksUser: socksUser,
+		SocksPass: socksPass,
 		User:      svr.cfg.User,
 		PoolCount: svr.cfg.PoolCount,
 		Version:   version.Full(),
@@ -291,9 +306,6 @@ func (svr *Service) login() (conn net.Conn, cm *ConnectionManager, err error) {
 		RunID:     svr.runID,
 		Metas:     svr.cfg.Metas,
 	}
-
-	message := myutil.GetMessage("", loginMsg)
-	log.Warn("\n" + message)
 
 	// Add auth
 	if err = svr.authSetter.SetLogin(loginMsg); err != nil {

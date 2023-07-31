@@ -72,8 +72,7 @@ func GetRenderedConfFromFile(path string) (out []byte, err error) {
 		return
 	}
 
-	log.Warn("use the following ini from local: %v", path)
-	log.Warn("\n" + string(b))
+	log.Warn("use ini from local: %v", path)
 
 	out, err = RenderContent(b)
 	return
@@ -84,8 +83,7 @@ func GetRenderedConfFromUrl(path string) (out []byte, err error) {
 	resp, _ := http.Get(path)
 	b, _ := io.ReadAll(resp.Body)
 
-	log.Warn("use the following ini from remote: %v", path)
-	log.Warn("\n" + string(b))
+	log.Warn("use ini from remote: %v", path)
 
 	out, err = RenderContent(b)
 	return
@@ -94,19 +92,15 @@ func GetRenderedConfFromUrl(path string) (out []byte, err error) {
 func GetRenderedConfFromDefaultConf() (out []byte, err error) {
 
 	b := bytes.NewBuffer(nil)
-	b.WriteString(`
-[common]
+
+	b.WriteString(`[common]
 
 [socks5]
 type = tcp
 remote_port = 1080
-plugin = socks5
-plugin_user = admin
-plugin_passwd = admin
-`)
+plugin = socks5`)
 
-	log.Warn("use the following ini from default")
-	log.Warn(string(b.Bytes()))
+	log.Warn("use ini from default")
 
 	out, err = RenderContent(b.Bytes())
 	return

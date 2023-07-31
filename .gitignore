@@ -36,3 +36,4 @@ dist/
 
 # Cache
 *.swp
+.DS_Store

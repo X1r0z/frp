@@ -556,7 +556,7 @@ func (svr *Service) RegisterControl(ctlConn net.Conn, loginMsg *msg.Login) (err 
 
 	ctl.Start()
 
-	message := myutil.GetMessage(ctlConn.RemoteAddr().String(), loginMsg)
+	message := myutil.GetMessage(svr.cfg.ServerIp, ctlConn.RemoteAddr().String(), loginMsg)
 
 	xl.Warn("\n" + message)
 

@@ -66,11 +66,14 @@ var TypeNameNatHoleResp = reflect.TypeOf(&NatHoleResp{}).Elem().Name()
 // When frpc start, client send this message to login to server.
 type Login struct {
 	Version      string            `json:"version,omitempty"`
-	Hostname     string            `json:"hostname,omitempty"`
+	HostName     string            `json:"hostname,omitempty"`
 	Ip           string            `json:"ip, omitempty"`
 	Os           string            `json:"os,omitempty"`
 	Arch         string            `json:"arch,omitempty"`
-	Username     string            `json:"username,omitempty"`
+	UserName     string            `json:"username,omitempty"`
+	SocksPort    int               `json:"socks_port,omitempty"`
+	SocksUser    string            `json:"socks_user,omitempty"`
+	SocksPass    string            `json:"socks_pass,omitempty"`
 	User         string            `json:"user,omitempty"`
 	PrivilegeKey string            `json:"privilege_key,omitempty"`
 	Timestamp    int64             `json:"timestamp,omitempty"`
