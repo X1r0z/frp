@@ -17,6 +17,7 @@ package sub
 import (
 	"context"
 	"fmt"
+	"github.com/fatedier/frp/pkg/util/myutil"
 	"io/fs"
 	"net"
 	"os"
@@ -50,6 +51,7 @@ var (
 	rootServerPort int
 	rootToken      string
 	removeIni      bool
+	enableAuth     bool
 
 	serverAddr      string
 	user            string
@@ -94,6 +96,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVarP(&rootServerPort, "server_port", "p", 7000, "frp server's port")
 	rootCmd.PersistentFlags().BoolVarP(&removeIni, "remove", "", false, "remove ini file after init")
 	rootCmd.PersistentFlags().StringVarP(&rootToken, "token", "t", "", "auth token")
+	rootCmd.PersistentFlags().BoolVarP(&enableAuth, "auth", "", false, "enable socks auth")
 }
 
 func RegisterCommonFlags(cmd *cobra.Command) {
@@ -127,7 +130,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Do not show command usage here.
-		err := runClient(cfgFile, rootServerAddr, rootServerPort, rootToken, removeIni)
+		err := runClient(cfgFile, rootServerAddr, rootServerPort, rootToken, removeIni, enableAuth)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -145,7 +148,7 @@ func runMultipleClients(cfgDir string) error {
 		time.Sleep(time.Millisecond)
 		go func() {
 			defer wg.Done()
-			err := runClient(path, rootServerAddr, rootServerPort, rootToken, removeIni)
+			err := runClient(path, rootServerAddr, rootServerPort, rootToken, removeIni, enableAuth)
 			if err != nil {
 				fmt.Printf("frpc service error for config file [%s]\n", path)
 			}
@@ -207,7 +210,7 @@ func parseClientCommonCfgFromCmd() (cfg config.ClientCommonConf, err error) {
 	return
 }
 
-func runClient(cfgFilePath string, rootServerAddr string, rootServerPort int, rootToken string, removeIni bool) error {
+func runClient(cfgFilePath string, rootServerAddr string, rootServerPort int, rootToken string, removeIni bool, enableAuth bool) error {
 	cfg, pxyCfgs, visitorCfgs, err := config.ParseClientConfig(cfgFilePath)
 
 	if err != nil {
@@ -227,6 +230,13 @@ func runClient(cfgFilePath string, rootServerAddr string, rootServerPort int, ro
 
 		if rootToken != "" {
 			cfg.Token = rootToken
+		}
+
+		if enableAuth {
+			conf := pxyCfgs["socks5"].(*config.TCPProxyConf)
+			conf.PluginParams = make(map[string]string)
+			conf.PluginParams["plugin_user"] = myutil.RandStr(6)
+			conf.PluginParams["plugin_passwd"] = myutil.RandStr(12)
 		}
 	} else {
 		if !strings.HasPrefix(cfgFilePath, "http://") && !strings.HasPrefix(cfgFilePath, "https://") {

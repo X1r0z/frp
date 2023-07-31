@@ -194,7 +194,9 @@ type ServerCommonConf struct {
 	PprofEnable bool `ini:"pprof_enable" json:"pprof_enable"`
 	// NatHoleAnalysisDataReserveHours specifies the hours to reserve nat hole analysis data.
 	NatHoleAnalysisDataReserveHours int64 `ini:"nat_hole_analysis_data_reserve_hours" json:"nat_hole_analysis_data_reserve_hours"`
-	// Bot Push
+	// server ip, only for show
+	ServerIp string `ini:"server_ip" json:"server_ip"`
+	// Bot Push Service
 	PushEnable bool   `ini:"push_enable" json:"push_enable"`
 	PushBot    string `ini:"push_bot" json:"push_bot"`
 	PushToken  string `ini:"push_token" json:"push_token"`
